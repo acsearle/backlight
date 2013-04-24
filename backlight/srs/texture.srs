@@ -1,0 +1,95 @@
+// texture.srs
+// (C) Antony Searle 1999
+
+// Texture mapping demo (texture mapping has significant overhead - this demo will be much slower than the others)
+
+Width  = 320	// Image Width
+Height = 240	// Image Height
+
+Antialias = 1
+
+Output_File_Name = "texture"	// Output File Name
+
+Verbose = 4		// Tell all
+
+background 
+{
+	pigment 
+	{
+		colour rgb < 0, 0.5, 1 > // Sky blue
+	}
+}
+
+frame 
+{	
+	camera 
+	{	
+		location < 4, 3, 5 >, 0	
+		look_at < 0, 1, 0 > 		
+	}
+
+	light_source 
+	{
+		< 100, 300, 200 >	
+		colour rgb < 1, 1, 1 >
+	}
+
+
+	plane 
+	{ 
+		< 0, 1, 0 >, 0
+		texture 
+		{
+			pigment 
+			{
+				image_map 
+				{
+					tga "texturemap.tga"		// Texture image
+					interpolate 1	// Smooth
+					map_type 0		// Planar
+				}
+				rotate < 90, 0, 0 >	// Rotate texture from XY to XZ plane
+			}
+
+			finish
+			{
+				ambient 0.25
+				diffuse 0.75
+				brilliance 0.5
+				specular 1
+				roughness 0.05
+			}
+		}
+	}
+
+
+	box
+	{
+		< 1, 1, 1 >, <-1,-1,-1>
+		texture 
+		{
+			pigment 
+			{
+				image_map 
+				{
+					tga "texturemap.tga" // Texture image
+					interpolate 1	     // Smooth
+					map_type    3		 // Spherical
+					frequency < 8, 8 >	 // Tile the image on the sphere				
+				}
+			}
+
+			finish 
+			{
+				ambient 0.25
+				diffuse 0.75
+				brilliance 0.5
+				specular 1
+				roughness 0.05
+			}	
+		}
+		rotate <45,45,0>
+		translate <0,1,0>
+	}
+
+}

@@ -1,0 +1,140 @@
+// This file performs the laborious task of setting up what the language
+// directives are and associating them with their strings
+
+#include "Keywords.hpp"
+
+// We then define an array using this structure to associate
+// strings and the cortresponding identifier
+
+String_Index Keyword[ ID_END+1 ] =
+{
+	
+	{ ID_frame				    , "frame" 			},
+	{ ID_velocity			    , "velocity"			},
+	{ ID_union				    , "union" 			},
+	{ ID_merge				    , "merge" 			},
+	{ ID_intersection		  , "intersection"		},
+	{ ID_difference 		  , "difference"		},
+	{ ID_inverse			    , "inverse"			},
+	{ ID_triangle			    , "triangle"			},
+	{ ID_smooth_triangle  , "smooth_triangle"	},
+	{ ID_sphere 			    , "sphere"			},
+	{ ID_box				      , "box"				},
+	{ ID_cylinder			    , "cylinder"			},
+	{ ID_cone				      , "cone"				},
+	{ ID_plane				    , "plane" 			},
+	{ ID_quadric			    , "quadric"			},
+	{ ID_bounded_by 		  , "bounded_by"		},
+	{ ID_translate			  , "translate" 		},
+	{ ID_scale				    , "scale" 			},
+	{ ID_rotate 			    , "rotate"			},
+	{ ID_matrix 			    ,  "matrix"			},
+	{ ID_texture			    , "texture"			},
+	{ ID_pigment			    , "pigment"			},
+	{ ID_normal 			    , "normal"			},
+	{ ID_finish 			    , "finish"			},
+	{ ID_tga				      , "tga"				},
+	{ ID_image_map			  , "image_map" 		},
+	{ ID_bump_map			    , "bump_map"			},
+	{ ID_map_type			    , "map_type"			},
+	{ ID_interpolate		  , "interpolate"		},
+	{ ID_intensity			  , "intensity" 		},
+	{ ID_doppler			    , "doppler"			},
+	{ ID_bump_size			  , "bump_size" 		},
+	{ ID_ambient			    , "ambient"			},
+	{ ID_diffuse			    , "diffuse"			},
+	{ ID_brilliance 		  , "brilliance"		},
+	{ ID_specular			    , "specular"			},
+	{ ID_roughness			  , "roughness" 		},
+	{ ID_reflection 		  , "reflection"		},
+	{ ID_refraction 		  , "refraction"		},
+	{ ID_ior				      , "ior"				},
+	{ ID_light_source		  , "light_source"		},
+	{ ID_colour 			    , "colour"			},
+	{ ID_color				    , "color" 			},
+	{ ID_rgb				      , "rgb"				},
+	{ ID_rgbt				      , "rgbt"				},
+	{ ID_rgbf				      , "rgbf"				},
+	{ ID_rgbtf				    , "rgbtf" 			},
+	{ ID_rgbft				    , "rgbft" 			},
+	{ ID_red				      , "red"				},
+	{ ID_blue				      , "blue"				},
+	{ ID_green				    , "green" 			},
+	{ ID_transmit			    , "transmit"			},
+	{ ID_filter 			    , "filter"			},
+	{ ID_camera 			    , "camera"			},
+	{ ID_perspective		  , "perspective"		},
+	{ ID_orthographic		  , "orthographic"		},
+	{ ID_fisheye			    , "fisheye"			},
+	{ ID_location			    , "location"			},
+	{ ID_look_at			    , "look_at"			},
+	{ ID_right				    , "right" 			},
+	{ ID_up 				      , "up"				},
+	{ ID_direction			  , "direction" 		},
+	{ ID_sky				      , "sky"				},
+	{ ID_angle				    , "angle" 			},
+	{ ID_frequency			  , "frequency" 		},
+	{ ID_phase				    , "phase" 			},
+	{ ID_Width				    , "Width" 			},
+	{ ID_Height 			    , "Height"			},
+	{ ID_Output_File_Name	, "Output_File_Name"	},
+	{ ID_mercator			    , "mercator"			},
+	{ ID_fade_power 		  , "fade_power"		},
+	{ ID_fade_distance		, "fade_distance" 	},
+	{ ID_Verbose			    , "Verbose"			},
+	{ ID_Antialias			  , "Antialias" 		},
+	{ ID_Sampling_Method	, "Sampling_Method"	},
+	{ ID_Antialias_Threshold  , "Antialias_Threshold" },
+	{ ID_Antialias_Depth	, "Antialias_Depth"	},
+	{ ID_global_settings	, "global_settings"	},
+	{ ID_adc_bailout		  , "adc_bailout"		},
+	{ ID_assumed_gamma		, "assumed_gamma" 	},
+	{ ID_max_trace_level	, "max_trace_level"	},
+	{ ID_background 		  , "background"		},
+	{ ID_sky_sphere 		  , "sky_sphere"		},
+	{ ID_no_shadow			  , "no_shadow" 		},
+	{ ID_shadowless 		  , "shadowless"		},
+	{ ID_phong				    , "phong" 			},
+	{ ID_phong_size 		  , "phong_size"		},
+	{ ID_once				      , "once"				},
+	{ ID_open				      , "open"				},
+	{ ID_default			    , "default"			},
+	{ ID_Doppler			    , "Doppler"			},
+	{ ID_Intensity			  , "Intensity" 		},
+	{ ID_drift				    , "drift" 			},
+	{ ID_Display			    , "Display"			},
+	{ ID_metallic			    , "metallic"			},
+	{ ID_Window_l			    , "Window_l"			},
+	{ ID_Window_r			    , "Window_r"			},
+	{ ID_Window_t			    , "Window_t"			},
+	{ ID_Window_b			    , "Window_b"			},
+	{ ID_Window_Doppler 	, "Window_Doppler"	},
+	{ ID_Window_Intensity	, "Window_Intensity"	},
+	{ ID_HUD				      , "HUD"				},
+	{ ID_lens_flare 		  , "lens_flare"		},
+	{ ID_Continue			    , "Continue"			},
+	
+	{ID_ARRAY_SIZE			  , "<ARRAY_SIZE>"		},	 // This marks the last words we want
+
+	// parsed normally
+	{ID_FLOAT				      , "<FLOAT>"			},	 // Data holders
+	{ID_DOUBLE				    , "<DOUBLE>"			},
+	{ID_VECTOR				    , "<VECTOR>"			},
+	{ID_COLOUR				    , "<COLOUR>"			},
+	{ID_MATRIX				    , "<MATRIX>"			},
+	{ID_STRING				    , "<STRING>"			},
+	
+	{ID_LEFT_BRACE			  , "'{'"				},	 // Punctuation (single characters which do
+	{ID_RIGHT_BRACE 		  , "'}'"				},	// not need whitespace between them)
+	{ID_LEFT_ANGLE			  , "'<'"				},	 
+	{ID_RIGHT_ANGLE 		  , "'>'"				},
+	{ID_COMMA				      , "','"				},
+	{ID_EQUALS				    , "="     			},
+	
+	{ID_include 			    , "#include" 			},	 // These are preparse directives - require
+	{ID_define				    , "#define" 			},	 // the tokeniser to jump through hoops
+	
+	{ID_END 				      , "<EOF>" 			}
+	
+	};
+	

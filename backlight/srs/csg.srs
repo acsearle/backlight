@@ -1,0 +1,143 @@
+// csg.srs
+// (C) Antony Searle 1999
+
+// Demonstrates Constructive Solid Geometry (CSG)
+
+Width  = 320	// Image Width
+Height = 240	// Image Height
+
+Antialias = 1
+
+Output_File_Name = "csg"	// Output File Name
+
+Verbose = 4		// Tell all
+
+// We declare a complex texture
+#declare First1 = 
+texture 
+{
+	pigment { colour rgbft <1,.2,.04,0,0> }
+	finish 
+	{
+		reflection .9
+		ambient 0.0
+		specular 0.0
+		roughness 0.1
+		diffuse 0.0
+		brilliance 10
+	}
+}
+
+#declare First2 = 
+texture 
+{
+	pigment { colour rgbft <1,.2,.04,0,0> }
+	finish 
+	{
+		ambient 0.75
+		specular 0.5
+		roughness .05
+		diffuse 0.5
+		brilliance 1
+	}
+}
+
+#declare Second = 
+texture 
+{
+	pigment { colour rgbft <0,1,0,0,0> }
+	finish 
+	{
+		ambient 0.75
+		diffuse 0.75
+		specular 1
+		roughness 0.001
+		brilliance 2
+	}
+}
+
+// Define the background colour
+
+background 
+{
+	pigment
+	{
+                colour blue .9
+	}
+}
+
+frame
+{
+    velocity < 0, 0, 0 >    // They are not moving with respect to the fiducial frame
+
+	light_source
+	{
+		<-100,-200,-300 >	// A distant light
+		colour rgb < .3, .3, .3 >	// White light
+	}
+
+	camera 
+	{	// A camera
+		location < 10,0,1>, 0
+		look_at < 0, 0, 1 >
+		up <0,0,1>		
+	}
+
+}
+
+frame
+{	// Define a group of comoving objects
+
+	velocity < 0, 0, 0 >	// They are not moving with respect to the fiducial frame
+
+
+	light_source 
+	{
+		< 100, 200, 300 >	// A distant light
+		colour rgb < .3, .3, .3 >	// White light
+	}
+
+
+    sphere{ <0,0,-3>,2 First2 }
+    sphere{ <0,0, 3>,2 Second }
+
+	box{ <-1,-1,-1>, <1,1,1> First2 }
+	cone { <0,0,1>,4,<0,0,2>,1 First2 }
+
+	cylinder { <0,0,-5>,<0,0,5>,20 First2 }
+
+
+	union
+	{	
+		intersection
+		{	// The inside of an intersection object is inside all it's members
+			sphere { < 0, 0, 0 >, 1 First2 }
+			sphere { < 0, 1, 0 >, 1 Second }
+		}
+		translate < 2, 0, 0 >
+
+		difference
+		{
+			// The inside of a differene obejct is inside it's first member and outside the rest
+            sphere { < 0, 0, 0 >, 1 First2 }
+			sphere { < 0, 1, 0 >, 1 Second }
+		}
+		translate < 2, 0, 0 >
+
+		merge
+		{
+			// A merge is a union without internal surfaces
+            sphere { < 0, 0, 0 >, 1 First2 }
+			sphere { < 0, 1, 0 >, 1 Second }
+		}
+		translate < 2, 0, 0 >
+
+		union
+		{
+			sphere { < 0, 0, 0 >, 1 First2 }
+			sphere { < 0, 1, 0 >, 1 Second }
+		}
+		translate < 2, 0, 0 >
+	}
+
+}

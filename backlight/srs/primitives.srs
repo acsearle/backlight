@@ -1,0 +1,118 @@
+// primitives.srs
+// (C) Antony Searle 1999
+
+Width  = 320	// Image Width
+Height = 240	// Image Height
+
+Antialias = 1	// Antialiasing on
+
+Output_File_Name = "primitives"	// Output File Name
+
+Verbose = 4		// Tell all
+
+frame {	// Define a group of comoving objects
+
+	velocity < 0, 0, 0 >	// They are not moving with respect to the fiducial frame
+
+	camera {	// A camera
+		location < 10, 5, 5 >, 0	// take the picture from location < #, #, # > at time #
+		look_at < 0, 0, 0 > 		// Point the camera here
+		}
+
+	light_source {
+		< 100, 200, 300 >	// A distant light
+		colour rgb < 1, 1, 1 >	// White light
+		}
+	
+	union 
+	{
+		// Combine these objects into a group
+/*		
+		plane 
+		{	// An infinite plane
+			< 1, 1, 1 >,	// Normal 
+					-5	// Offset (along normal from origin)
+		}
+		translate < 2, 0, 0 >
+
+		triangle 
+		{
+		    // A simple triangle
+			< 0, 0, 0 >,	// Vertex 1
+			< 0, 1, 0 >,	// Vertex 2
+			< 1, 0, 0 >		// Vertex 3
+		}
+		translate < 2, 0, 0 >	// Move it along
+		
+
+		smooth_triangle 
+		{	// A smooth triangle
+			< 0, 0, 5 >,	// Vertex 1
+			< 0, 0, 1 >,	// Normal 1
+			
+			< 0, 5, 0 >,	// Vertex 2
+			< 0, 1, 0 >,	// Normal 2
+			
+			< 5, 0, 0 >,	// Vertex 3
+			< 1, 0, 0 >		// Normal 3	
+		}
+
+		translate < 2, 0, 0 >	// Move it along
+
+		
+		sphere
+		{
+			// A sphere
+			< 0, 0, 0 >,	// At the origin...
+				1	// ...of unit radius
+		}
+		translate < 2, 0, 0 >	// Move it along
+
+	
+		box 
+		{	
+			// A box
+			< 0, 0, 0 >,	// Coordinate minima
+			< 1, 1, 1 >		// Coordinate maxima
+		}
+		translate < 2, 0, 0 >	// Move it along
+*/
+		cone 
+		{	
+			// A cone
+			< 0, 0, 0 >,	// Centre of end 1
+					1,	// Radius at end 1
+			< 0, 5, 0 >, 	// Centre of end 2
+					0	// Radius of end 2
+		}
+/*		translate < 2, 0, 0 >	// Move it along
+		
+		cylinder 
+		{	
+			// A cylinder
+			< 0, 0, 0 >,	// Centre of end 1
+			< 0, 1, 0 >,	// Centre of end 2
+					1	// Radius
+		}
+*/
+		texture 
+		{
+			// Define the object surface properties
+
+			pigment 
+			{
+				// Object pigment
+				colour rgb < 1, 0, 1 >	// Purple
+			}
+
+			finish
+			{
+				// Misc. properties
+				ambient 0.25	// 25 % ambient (white) light
+				diffuse 0.75	// Reflect 75 % of light_source
+				specular 1		// Bright higlight
+				roughness 0.01	// Smooth surface ==> tight highlight
+			}
+		}
+	}
+}

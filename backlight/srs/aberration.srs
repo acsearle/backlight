@@ -1,0 +1,66 @@
+// aberration.srs
+// (C) Antony Searle 1999
+
+// Aberration at varying speeds. The camera is inside a cube. As we take shots at the same event with incresing velocities, the image is more distorted
+
+
+Width  = 320	// Image Width
+Height = 240	// Image Height
+
+Antialias = 1
+
+Output_File_Name = "aberration"	// Output File Name
+
+Verbose = 4		// Tell all
+
+// Comment out to see these effects
+//Doppler = 0
+Intensity = 0
+
+background {
+	pigment {
+		colour rgb < 0, 0.5, 1 > // Sky blue
+		}
+	}
+
+frame {	
+	camera {	
+		velocity < 0, 0, 0 >
+		location < 0, 0, 0 >, 0	
+		look_at < 1, 0, 0 > 		
+		}
+	camera {	
+		velocity < 0.9, 0, 0 >
+		location < 0, 0, 0 >, 0	
+		look_at < 1, 0, 0 > 		
+		}
+	camera {	
+		velocity < 0.99, 0, 0 >
+		location < 0, 0, 0 >, 0	
+		look_at < 1, 0, 0 > 		
+		}
+
+	light_source {
+		< 0.5, 0.6, 0.7 >	
+		colour rgb < 1, 1, 1 >
+		}
+	
+	union {	
+		box { < -2, -2, -2 >, < 2, -1, -1 > }
+		box { < -2, -2,  1 >, < 2, -1,  2 > }
+		box { < -2,  1,  1 >, < 2,  2,  2 > }
+		box { < -2,  1, -2 >, < 2,  2, -1 > }
+
+		box { < -2, -1, -2 >, < -1, 1, -1 > }
+		box { <  1, -1, -2 >, <  2, 1, -1 > }
+		box { < -2, -1,  1 >, < -1, 1,  2 > }
+		box { <  1, -1,  1 >, <  2, 1,  2 > }
+
+		box { < -2, -2, -1 >, < -1, -1, 1 > }
+		box { < -2,  1, -1 >, < -1,  2, 1 > }
+		box { <  1, -2, -1 >, <  2, -1, 1 > }
+		box { <  1,  1, -1 >, <  2,  2, 1 > }
+
+		pigment { colour rgb < 0.25, 1, 0.25 > }
+		}
+	}
