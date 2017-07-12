@@ -1,11 +1,9 @@
 #pragma once
 
-namespace lift
-{
+namespace lift {
 
-  template<typename T> struct scalar
-  {
-    typedef T type;
-  };
-
+template <typename T>
+struct scalar {
+  typedef T type;
+};
 }
