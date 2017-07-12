@@ -1,55 +1,57 @@
 #include "Main.hpp"
 
-pFrame      *Current_Frame;
-pCamera     *Current_Camera;
+pFrame *Current_Frame;
+pCamera *Current_Camera;
 
-pTexture     Default_Texture;
-pBitmap      First_Bitmap;
+pTexture Default_Texture;
+pBitmap First_Bitmap;
 
-cSettings_Global   Globals;
-cTexture           SkySphereSurface;
-lift::vector<double, 3>            SkySphereVelocity;
+cSettings_Global Globals;
+cTexture SkySphereSurface;
+lift::vector<double, 3> SkySphereVelocity;
 
-int main(int argc, char* argv[]) 
-{
+int main(int argc, char *argv[]) {
   cScene World;
   cTexture Default;
-  
-  printf("\n    BACKLIGHT Relativistic Raytracer v2.9\n\n    Copyright (c) Antony Searle 1997-8\n\n");
-  
+
+  printf(
+      "\n    BACKLIGHT Relativistic Raytracer v2.9\n\n    Copyright (c) Antony "
+      "Searle 1997-8\n\n");
+
   // Look at arguments...
-  
-  if(argc != 2) 
-  {
+
+  if (argc != 2) {
     printf("Syntax: BackLight [input file name]\n");
     exit(0);
   }
-  
+
   // Setup some globals...
-  
+
   First_Bitmap = NULL;
-  
+
   Default_Texture = &Default;
-  
+
   SkySphereSurface = Default;
-  SkySphereVelocity = lift::make_vector<double>( 0, 0, 0 );
-  
+  SkySphereVelocity = lift::make_vector<double>(0, 0, 0);
+
   World.Load(argv[1]);
-  
+
   World.Raytrace();
-  
-  return(EXIT_SUCCESS);
+
+  return (EXIT_SUCCESS);
 }
 
 // Compiler notes
 
 // CURRENT:
 
-// Attempting to fix shadow speckle on coincident surfaces; attempting to clip away
+// Attempting to fix shadow speckle on coincident surfaces; attempting to clip
+// away
 // non-origin surfaces on shadow rays over short distances.
 
 // GLOBAL FIXUPS:
-// Currently, the interior surfaces of unions show m_up in differences where they shouldn't.
+// Currently, the interior surfaces of unions show m_up in differences where
+// they shouldn't.
 // This is hard to fix - is a parenting solution the answer?
 
 // Notes:
@@ -61,7 +63,8 @@ int main(int argc, char* argv[])
 // 3 -> RIDICULOUS STUFF
 // 4 -> EVERYTHING!!!!
 
-// Note that non-zero verbose settings can severely impare the parsing performance of the
+// Note that non-zero verbose settings can severely impare the parsing
+// performance of the
 // program for complex scenes (it will spew forth megabytes of text!)
 
 // KNOWN BUG: In Win95, it can max out the 16Mb of DPMI memory available. So,
@@ -79,7 +82,8 @@ int main(int argc, char* argv[])
 // use e.g(). map_Planar = 0, map_Spherical = 1
 
 // Hmm... Perhaps the cameras should be treated like light_sources to allow
-// transformations and nesting...? Yes, this allows their attachment to objects, a 
+// transformations and nesting...? Yes, this allows their attachment to objects,
+// a
 // desireable effect.
 
 // Make no_shadow recursive to higher levels

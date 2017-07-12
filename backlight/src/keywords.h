@@ -9,7 +9,6 @@ external enum Identifier;
 
 struct String_Index;
 
-extern String_Index Keyword[ ID_ARRAY_SIZE ];
-
+extern String_Index Keyword[ID_ARRAY_SIZE];
 
 #endif

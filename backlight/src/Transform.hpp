@@ -1,16 +1,16 @@
 #ifndef TRANSFORM_HPP
 #define TRANSFORM_HPP
 
-#include "Global.hpp"
 #include <lift/vector.hpp>
 #include "Event.hpp"
+#include "Global.hpp"
 #include "Matrix.hpp"
 #include "Warps.hpp"
 
 #define TRANSFORM_TRANSLATE 1L
-#define TRANSFORM_SCALE     2L
-#define TRANSFORM_ROTATE    3L
-#define TRANSFORM_MATRIX    4L
+#define TRANSFORM_SCALE 2L
+#define TRANSFORM_ROTATE 3L
+#define TRANSFORM_MATRIX 4L
 
 //
 // Function prototypes
@@ -20,280 +20,259 @@
 //  Classes
 //
 
-class ctTransform : public RefCount
-{
-  public:
+class ctTransform : public RefCount {
+ public:
+  static pToken Parse(pToken, pTransform &);
+  static pTransform Create(cMatrix &m);
+  static pTransform Create(pwWarp &pw);
 
-    static pToken     Parse(pToken, pTransform &);
-    static pTransform Create(cMatrix & m );
-    static pTransform Create(pwWarp   & pw);
+ protected:
+  //---- DATA ---------------------------------------------------
 
-  protected:
+ public:
+  //---- CTORS ---------------------------------------------------
 
-    //---- DATA ---------------------------------------------------
+  ctTransform() { Initialize(); };
 
-  public:
+  //---- INIT ----------------------------------------------------
 
-    //---- CTORS ---------------------------------------------------
+  virtual void Initialize(){};
 
-      ctTransform() { Initialize(); };
+  //---- ACCESSORS -----------------------------------------------
 
-    //---- INIT ----------------------------------------------------
+  //---- FUNCTIONS -----------------------------------------------
 
-      virtual void Initialize() {};
+  virtual cEvent Apply(cEvent &o) { return o; };
+  virtual cEvent UnApply(cEvent &o) { return o; };
 
-    //---- ACCESSORS -----------------------------------------------
+  virtual void Evaluate_Frame(cEvent &o, cCoordinate_Frame &f){};
+  virtual void UnEvaluate_Frame(cEvent &o, cCoordinate_Frame &f){};
 
-    //---- FUNCTIONS -----------------------------------------------
+  //---- OPERATORS -----------------------------------------------
 
-      virtual cEvent Apply(cEvent & o)   { return o; };
-      virtual cEvent UnApply(cEvent & o) { return o; };
+  _inline cEvent operator&(cEvent &e);
+  _inline cEvent operator*(cEvent &e);
+  _inline cEvent operator/(cEvent &e);
 
-      virtual void   Evaluate_Frame(cEvent & o, cCoordinate_Frame & f ) {};
-      virtual void   UnEvaluate_Frame(cEvent & o, cCoordinate_Frame & f ) {};
+  virtual lift::vector<double, 3> operator&(lift::vector<double, 3> &v) {
+    return v;
+  };
+  virtual lift::vector<double, 3> operator*(lift::vector<double, 3> &v) {
+    return v;
+  };
+  virtual lift::vector<double, 3> operator/(lift::vector<double, 3> &v) {
+    return v;
+  };
 
-    //---- OPERATORS -----------------------------------------------
+  //---- INHERITED FUNCTIONS -------------------------------------
 
-      _inline cEvent operator & (cEvent & e);
-      _inline cEvent operator * (cEvent & e);
-      _inline cEvent operator / (cEvent & e);
-
-      virtual lift::vector<double, 3> operator & (lift::vector<double, 3> & v) { return v; };
-      virtual lift::vector<double, 3> operator * (lift::vector<double, 3> & v) { return v; };
-      virtual lift::vector<double, 3> operator / (lift::vector<double, 3> & v) { return v; };
-
-    //---- INHERITED FUNCTIONS -------------------------------------
-
-      virtual pToken Load(pToken  T) { return T; };   
+  virtual pToken Load(pToken T) { return T; };
 };
-
 
 /***************************************************************************************************/
 
-class cStack_Transform // : public tStack_Pointer_Dynamic<ctTransform>
+class cStack_Transform  // : public tStack_Pointer_Dynamic<ctTransform>
 {
+ public:
+  std::vector<ctTransform *> buffer;
 
-    public:
+  cStack_Transform() {
+    double a;
 
-      std::vector<ctTransform*> buffer;
+    a = 1.0;
+  };
 
-    cStack_Transform()
-    {
-      double a;
-      
-      a = 1.0;
+  cEvent Apply_Transforms(cEvent &o) {
+    // pTransform p_temp;
+    cEvent t_o;
+    long i;
+
+    if (buffer.empty()) return o;
+
+    t_o = o;
+    for (i = buffer.size() - 1; i > -1; i--) {
+      if (NULL != buffer[i]) t_o = buffer[i]->Apply(t_o);
     };
 
-    cEvent Apply_Transforms(cEvent & o)
-    {
-      //pTransform p_temp;
-      cEvent  t_o;
-      long    i;
+    return t_o;
+  }
 
-      if( buffer.empty() ) return o;
+  cEvent UnApply_Transforms(cEvent o) {
+    //      pTransform p_temp;
+    cEvent t_o;
+    long i;
 
-      t_o = o;
-      for(i=buffer.size()-1; i>-1; i--)
-      {
-        if(NULL!=buffer[i])
-          t_o = buffer[i]->Apply(t_o);
-      };
+    if (buffer.empty()) return o;
 
-      return t_o;
-    }
+    t_o = o;
+    for (i = 0; i < buffer.size(); i++) {
+      if (NULL != buffer[i]) t_o = buffer[i]->UnApply(t_o);
+    };
 
-    cEvent UnApply_Transforms(cEvent o)
-    {
-//      pTransform p_temp;
-      cEvent  t_o;
-      long    i;
+    return t_o;
+  }
 
-      if( buffer.empty() ) return o;
+  cEvent Evaluate_Frame(cEvent &o, cCoordinate_Frame &f) {
+    //      pTransform p_temp;
+    cEvent t_o;
+    long i;
 
-      t_o = o;
-      for(i=0; i<buffer.size(); i++)
-      {
-        if(NULL!=buffer[i])
-          t_o = buffer[i]->UnApply(t_o);
-      };
+    if (buffer.empty()) return o;
 
-      return t_o;
-    }
+    t_o = o;
+    for (i = buffer.size() - 1; i > -1; i--) {
+      if (NULL != buffer[i]) buffer[i]->Evaluate_Frame(t_o, f);
+    };
 
-    cEvent Evaluate_Frame(cEvent & o, cCoordinate_Frame & f )
-    {
-//      pTransform p_temp;
-      cEvent  t_o;
-      long    i;
+    return t_o;
+  }
 
-      if( buffer.empty() ) return o;
+  cEvent UnEvaluate_Frame(cEvent &o, cCoordinate_Frame &f) {
+    //      pTransform p_temp;
+    cEvent t_o;
+    long i;
 
-      t_o = o;
-      for(i=buffer.size()-1; i>-1; i--)
-      {
-        if(NULL!=buffer[i])
-          buffer[i]->Evaluate_Frame(t_o, f);
-      };
+    if (buffer.empty()) return o;
 
-      return t_o;
-    }
+    t_o = o;
+    for (i = 0; i < buffer.size(); i++) {
+      if (NULL != buffer[i]) buffer[i]->UnEvaluate_Frame(t_o, f);
+    };
 
-    cEvent UnEvaluate_Frame(cEvent & o, cCoordinate_Frame & f )
-    {
-//      pTransform p_temp;
-      cEvent  t_o;
-      long    i;
-
-      if( buffer.empty() ) return o;
-
-      t_o = o;
-      for(i=0; i<buffer.size(); i++)
-      {
-        if(NULL!=buffer[i])
-          buffer[i]->UnEvaluate_Frame(t_o, f);
-      };
-
-      return t_o;
-    }
-
+    return t_o;
+  }
 };
 
 /***************************************************************************************************/
 
-class ctMatrix : public ctTransform
-{
-  // 3d matrix transformation 
+class ctMatrix : public ctTransform {
+  // 3d matrix transformation
 
-  protected:
+ protected:
+  //---- DATA ---------------------------------------------------
 
-    //---- DATA ---------------------------------------------------
+  cMatrix m_forward, m_inverse;
 
-      cMatrix m_forward, m_inverse; 
-  
-  public:
+ public:
+  //---- CTORS ---------------------------------------------------
 
-    //---- CTORS ---------------------------------------------------
-  
-      ctMatrix()
-      {
-        //default constructors of matrix classes set it to the identity
-      };
+  ctMatrix(){
+      // default constructors of matrix classes set it to the identity
+  };
 
-      ctMatrix(cMatrix & m)
-      {
-        m_forward = m;
-        m_inverse = m_forward.invert();
-      };
+  ctMatrix(cMatrix &m) {
+    m_forward = m;
+    m_inverse = m_forward.invert();
+  };
 
-    //---- INIT ----------------------------------------------------
+  //---- INIT ----------------------------------------------------
 
-      void Initialize()
-      {
-        m_forward.Initialize();
-        m_inverse.Initialize(); 
-      };
+  void Initialize() {
+    m_forward.Initialize();
+    m_inverse.Initialize();
+  };
 
-      void Initialize(cMatrix & m)
-      {
-        m_forward = m;
-        m_inverse = m_forward.invert();
-      };
+  void Initialize(cMatrix &m) {
+    m_forward = m;
+    m_inverse = m_forward.invert();
+  };
 
-    //---- ACCESSORS -----------------------------------------------
-  
-      cMatrix & forward() { return m_forward; };
-      cMatrix & inverse() { return m_inverse; };
+  //---- ACCESSORS -----------------------------------------------
 
-    //---- FUNCTIONS -----------------------------------------------
-  
-      virtual cEvent Apply(cEvent & o)   { return cEvent(m_forward * o.p(), o.t()); };
-      virtual cEvent UnApply(cEvent & o) { return cEvent(m_inverse * o.p(), o.t()); };
+  cMatrix &forward() { return m_forward; };
+  cMatrix &inverse() { return m_inverse; };
 
-      virtual void   Evaluate_Frame(cEvent & o, cCoordinate_Frame & f )
-      {
-        f.du() = m_forward * f.du();
-        f.dv() = m_forward * f.dv();
-        f.dw() = m_forward * f.dw();
-      };
+  //---- FUNCTIONS -----------------------------------------------
 
-      virtual void   UnEvaluate_Frame(cEvent & o, cCoordinate_Frame & f )
-      {
-        f.du() = m_inverse * f.du();
-        f.dv() = m_inverse * f.dv();
-        f.dw() = m_inverse * f.dw();
-      };
+  virtual cEvent Apply(cEvent &o) { return cEvent(m_forward * o.p(), o.t()); };
+  virtual cEvent UnApply(cEvent &o) {
+    return cEvent(m_inverse * o.p(), o.t());
+  };
 
+  virtual void Evaluate_Frame(cEvent &o, cCoordinate_Frame &f) {
+    f.du() = m_forward * f.du();
+    f.dv() = m_forward * f.dv();
+    f.dw() = m_forward * f.dw();
+  };
 
-    //---- OPERATORS -----------------------------------------------
+  virtual void UnEvaluate_Frame(cEvent &o, cCoordinate_Frame &f) {
+    f.du() = m_inverse * f.du();
+    f.dv() = m_inverse * f.dv();
+    f.dw() = m_inverse * f.dw();
+  };
 
-      virtual lift::vector<double, 3> operator & (lift::vector<double, 3> & v) { return m_forward & v; };
-      virtual lift::vector<double, 3> operator * (lift::vector<double, 3> & v) { return m_forward * v; };
-      virtual lift::vector<double, 3> operator / (lift::vector<double, 3> & v) { return m_forward / v; };
+  //---- OPERATORS -----------------------------------------------
 
-    //---- INHERITED FUNCTIONS -------------------------------------
+  virtual lift::vector<double, 3> operator&(lift::vector<double, 3> &v) {
+    return m_forward & v;
+  };
+  virtual lift::vector<double, 3> operator*(lift::vector<double, 3> &v) {
+    return m_forward * v;
+  };
+  virtual lift::vector<double, 3> operator/(lift::vector<double, 3> &v) {
+    return m_forward / v;
+  };
 
-      virtual pToken Load(pToken  T);   
+  //---- INHERITED FUNCTIONS -------------------------------------
 
+  virtual pToken Load(pToken T);
 };
 
 /***************************************************************************************************/
 
-class ctWarp : public ctTransform
-{
-  // 3d matrix transformation 
+class ctWarp : public ctTransform {
+  // 3d matrix transformation
 
-  protected:
+ protected:
+  //---- DATA ---------------------------------------------------
 
-    //---- DATA ---------------------------------------------------
+  pwWarp m_pwarp;
 
-      pwWarp m_pwarp; 
-  
-  public:
+ public:
+  //---- CTORS ---------------------------------------------------
 
-    //---- CTORS ---------------------------------------------------
-  
-      ctWarp()
-      {
-        //default constructors of matrix classes set it to the identity
-      };
+  ctWarp(){
+      // default constructors of matrix classes set it to the identity
+  };
 
-      ctWarp(pwWarp & p_w)
-      {
-        m_pwarp = p_w;
-      };
+  ctWarp(pwWarp &p_w) { m_pwarp = p_w; };
 
-    //---- INIT ----------------------------------------------------
+  //---- INIT ----------------------------------------------------
 
-      void Initialize() { };
+  void Initialize(){};
 
-    //---- ACCESSORS -----------------------------------------------
-  
-      pwWarp & pwarp() { return m_pwarp; };
+  //---- ACCESSORS -----------------------------------------------
 
-    //---- FUNCTIONS -----------------------------------------------
-  
-      virtual cEvent Apply(cEvent & o)
-      {
-        return m_pwarp->Warp(o);
-      };
+  pwWarp &pwarp() { return m_pwarp; };
 
-      virtual cEvent UnApply(cEvent & o)
-      {
-        return m_pwarp->UnWarp(o);
-      };
+  //---- FUNCTIONS -----------------------------------------------
 
-      virtual void   Evaluate_Frame(cEvent & o, cCoordinate_Frame & f ) { m_pwarp->Warp_Frame(o,f); };
-      virtual void   UnEvaluate_Frame(cEvent & o, cCoordinate_Frame & f ) { m_pwarp->UnWarp_Frame(o,f);};
+  virtual cEvent Apply(cEvent &o) { return m_pwarp->Warp(o); };
 
-    //---- OPERATORS -----------------------------------------------
+  virtual cEvent UnApply(cEvent &o) { return m_pwarp->UnWarp(o); };
 
-      virtual lift::vector<double, 3> operator & (lift::vector<double, 3> & v) { return m_pwarp->Warp(cEvent(v,0)).p(); };
-      virtual lift::vector<double, 3> operator * (lift::vector<double, 3> & v) { return m_pwarp->Warp(cEvent(v,0)).p(); };
-      virtual lift::vector<double, 3> operator / (lift::vector<double, 3> & v) { return m_pwarp->Warp(cEvent(v,0)).p(); };
+  virtual void Evaluate_Frame(cEvent &o, cCoordinate_Frame &f) {
+    m_pwarp->Warp_Frame(o, f);
+  };
+  virtual void UnEvaluate_Frame(cEvent &o, cCoordinate_Frame &f) {
+    m_pwarp->UnWarp_Frame(o, f);
+  };
 
-    //---- INHERITED FUNCTIONS -------------------------------------
+  //---- OPERATORS -----------------------------------------------
 
-      virtual pToken Load(pToken  T);   
+  virtual lift::vector<double, 3> operator&(lift::vector<double, 3> &v) {
+    return m_pwarp->Warp(cEvent(v, 0)).p();
+  };
+  virtual lift::vector<double, 3> operator*(lift::vector<double, 3> &v) {
+    return m_pwarp->Warp(cEvent(v, 0)).p();
+  };
+  virtual lift::vector<double, 3> operator/(lift::vector<double, 3> &v) {
+    return m_pwarp->Warp(cEvent(v, 0)).p();
+  };
+
+  //---- INHERITED FUNCTIONS -------------------------------------
+
+  virtual pToken Load(pToken T);
 };
 
 #endif
