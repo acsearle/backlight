@@ -10,6 +10,7 @@ To build on Linux, use the CMakeLists in the `backlight/` folder:
 ```shell
 cd backlight
 mkdir build
+cd build
 cmake ..
 make
 ```
